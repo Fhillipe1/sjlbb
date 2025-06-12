@@ -1,0 +1,8 @@
+# .streamlit/config.toml
+[theme]
+base="dark"
+primaryColor="#FF4B4B" # Um vermelho/laranja neutro que combina com tema dark
+backgroundColor="#0E1117"
+secondaryBackgroundColor="#262730"
+textColor="#FAFAFA"
+font="sans serif"
