@@ -304,53 +304,98 @@ def load_data():
 # Carrega os dados tratados
 df = load_data()
 
-# --- 4. Sidebar para Filtros ---
+# --- 4. Sidebar para Filtros (Visual Moderno e Profissional) ---
 with st.sidebar:
     st.markdown(
         """
-        <div style='text-align:center; margin-bottom: 1.5em;'>
-            <img src='https://site.labrasaburger.com.br/wp-content/uploads/2021/09/logo.png' style='width:90px; margin-bottom:0.5em; border-radius: 12px; box-shadow: 0 4px 16px #FF4B4B22;' />
-            <h2 style='color:#FF4B4B; margin-bottom:0.2em;'>Filtros</h2>
-            <p style='color:#BBBBBB; font-size:1.1em;'>Personalize sua análise</p>
+        <div style='
+            text-align:center;
+            margin-bottom: 2em;
+            padding: 1.2em 0 1em 0;
+            background: linear-gradient(120deg, #23263A 60%, #181A23 100%);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px #FF4B4B22, 0 1px 8px #000A;
+            border: 1.5px solid #FF4B4B33;
+        '>
+            <img src='https://site.labrasaburger.com.br/wp-content/uploads/2021/09/logo.png'
+                 style='width:80px; margin-bottom:0.5em; border-radius: 12px; box-shadow: 0 2px 8px #FFB34722;' />
+            <h2 style='
+                color:#FF4B4B;
+                margin-bottom:0.1em;
+                font-size:2em;
+                font-weight:900;
+                letter-spacing:0.02em;
+                text-shadow:0 2px 8px #FFB34744;
+            '>Filtros</h2>
+            <p style='
+                color:#FFB347;
+                font-size:1.08em;
+                margin-bottom:0.2em;
+                font-weight:600;
+                letter-spacing:0.01em;
+            '>Personalize sua análise</p>
         </div>
         """, unsafe_allow_html=True
     )
 
-# Filtro de Data
-# Pega a data mínima e máxima disponível nos dados
-min_date = df['Data'].min()
-max_date = df['Data'].max()
+    # Filtro de Data
+    min_date = df['Data'].min()
+    max_date = df['Data'].max()
+    st.markdown(
+        "<span style='color:#FFB347; font-weight:700; font-size:1.1em;'>Período de Análise</span>",
+        unsafe_allow_html=True
+    )
+    date_range = st.date_input(
+        "",
+        value=(min_date, max_date),
+        min_value=min_date,
+        max_value=max_date,
+        key="date_range"
+    )
+    st.markdown("<hr style='margin:0.7em 0 1em 0; border:1px solid #FFB34722;'>", unsafe_allow_html=True)
 
-# Permite ao usuário selecionar um intervalo de datas
-date_range = st.sidebar.date_input(
-    "Selecione o Período",
-    value=(min_date, max_date),
-    min_value=min_date,
-    max_value=max_date
-)
+    # Garante que date_range tenha dois elementos (início e fim)
+    if len(date_range) == 2:
+        start_date, end_date = date_range
+    else:
+        start_date = date_range[0]
+        end_date = date_range[0]
 
-# Garante que date_range tenha dois elementos (início e fim)
-if len(date_range) == 2:
-    start_date, end_date = date_range
-else:
-    # Se apenas uma data for selecionada, defina o fim como a mesma data
-    start_date = date_range[0]
-    end_date = date_range[0]
+    # Filtra o DataFrame com base nas datas selecionadas
+    df_filtered = df[(df['Data'] >= start_date) & (df['Data'] <= end_date)]
 
-# Filtra o DataFrame com base nas datas selecionadas
-df_filtered = df[(df['Data'] >= start_date) & (df['Data'] <= end_date)]
+    # Filtro de Método de Pagamento
+    st.markdown(
+        "<span style='color:#FFB347; font-weight:700; font-size:1.1em;'>Forma de Pagamento</span>",
+        unsafe_allow_html=True
+    )
+    payment_methods = df_filtered['Pagamento'].unique().tolist()
+    selected_payment_methods = st.multiselect(
+        "",
+        options=payment_methods,
+        default=payment_methods,
+        key="payment_methods"
+    )
 
-# Adiciona um filtro para o método de pagamento
-st.sidebar.subheader("Filtrar por Método de Pagamento")
-payment_methods = df_filtered['Pagamento'].unique().tolist()
-selected_payment_methods = st.sidebar.multiselect(
-    "Selecione as Formas de Pagamento",
-    options=payment_methods,
-    default=payment_methods
-)
+    # Aplica o filtro de método de pagamento
+    df_filtered = df_filtered[df_filtered['Pagamento'].isin(selected_payment_methods)]
 
-# Aplica o filtro de método de pagamento
-df_filtered = df_filtered[df_filtered['Pagamento'].isin(selected_payment_methods)]
+    st.markdown(
+        """
+        <div style='
+            margin-top:2em;
+            color:#BBBBBB;
+            font-size:0.98em;
+            text-align:center;
+            opacity:0.85;
+        '>
+            <span style='font-size:1.2em;'>💡</span>
+            <span>
+                Dica: Use os filtros para refinar sua análise e descobrir tendências específicas do faturamento na madrugada!
+            </span>
+        </div>
+        """, unsafe_allow_html=True
+    )
 
 # --- 5. Título Principal do Dashboard ---
 # Título principal estilizado com logo e destaque visual
