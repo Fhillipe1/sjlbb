@@ -43,14 +43,15 @@ st.markdown("""
     font-size: 4em;
     font-weight: 900;
     text-align: center;
-    color: #FFF;
-    text-shadow: 0 6px 32px #FF4B4B44, 0 2px 8px #000A;
+    color: #FFF; /* Cor do texto agora é sólida branca */
+    text-shadow: 0 6px 32px rgba(0,0,0,0.5), 0 2px 8px #000A; /* Sombra sutil para profundidade */
     margin-bottom: 0.2em;
     padding-top: 0.5em;
     letter-spacing: 0.03em;
-    background: linear-gradient(90deg, #FF4B4B 10%, #FFB347 90%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    /* REMOVIDO: as propriedades de gradiente e clip de texto que estavam causando o problema do título "apagado" */
+    /* background: linear-gradient(90deg, #FF4B4B 10%, #FFB347 90%); */
+    /* -webkit-background-clip: text; */
+    /* -webkit-text-fill-color: transparent; */
 }
 
 /* --- Subtítulo --- */
