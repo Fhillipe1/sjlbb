@@ -467,7 +467,12 @@ if not df_filtered.empty: # Condição para garantir que os gráficos só apare�
     st.plotly_chart(fig_bar_hourly, use_container_width=True)
 
     # --- 8. Tabela de Dados (Amostra) ---
-    st.subheader("Dados Detalhados (Amostra)")
+    st.markdown("""
+    <h3 style="color:#FFB347; font-weight:800; margin-top:2em; margin-bottom:0.5em; text-align:left; letter-spacing:0.01em; text-shadow:0 2px 8px #0006;">
+        <span style="vertical-align:middle; font-size:1.3em;">📊</span>
+        Dados Detalhados das Vendas (Amostra)
+    </h3>
+    """, unsafe_allow_html=True)
 
     # Seleciona as colunas e renomeia para exibir nomes mais amigáveis com ícones
     df_display = df_filtered.copy()
