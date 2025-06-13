@@ -11,7 +11,8 @@ import datetime # Para lidar com objetos de tempo
 # O layout 'wide' utiliza toda a largura disponível da tela, o que é ótimo para dashboards.
 st.set_page_config(
     page_title="Dashboard La Brasa Burger - Faturamento Madrugada",
-    page_icon="🍔", # ALTERADO: Ícone para um emoji para maior estabilidade
+    # Mantendo o ícone da URL fornecida, mas lembrando que URLs externas podem ter problemas de carregamento
+    page_icon="https://site.labrasaburger.com.br/wp-content/uploads/2021/09/logo.png",
     layout="wide"
 )
 
