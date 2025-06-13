@@ -12,7 +12,7 @@ import datetime # Para lidar com objetos de tempo
 # O layout 'wide' utiliza toda a largura disponível da tela, o que é ótimo para dashboards.
 st.set_page_config(
     page_title="Dashboard La Brasa Burger - Faturamento Madrugada",
-    page_icon="🍔", # Ícone que aparece na aba do navegador
+    page_icon="https://site.labrasaburger.com.br/wp-content/uploads/2021/09/logo.png",  # Ícone personalizado
     layout="wide"
 )
 
@@ -21,112 +21,242 @@ st.set_page_config(
 # O 'unsafe_allow_html=True' é necessário para permitir a renderização de HTML/CSS.
 st.markdown("""
 <style>
-/* Estilo geral do corpo da aplicação Streamlit */
+/* --- Estilo Global --- */
 .stApp {
-    background-color: #0E1117; /* Cor de fundo principal, corresponde ao config.toml */
-    color: #FAFAFA; /* Cor do texto padrão, corresponde ao config.toml */
+    background: linear-gradient(135deg, #181A23 0%, #23263A 100%);
+    color: #FAFAFA;
+    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    letter-spacing: 0.01em;
 }
 
-/* Estilização do Título Principal */
+/* --- Scrollbar customizada --- */
+::-webkit-scrollbar {
+    width: 10px;
+    background: #23263A;
+}
+::-webkit-scrollbar-thumb {
+    background: #FF4B4B;
+    border-radius: 8px;
+}
+
+/* --- Título Principal --- */
 .main-title {
-    font-size: 3.8em; /* Tamanho da fonte maior */
-    font-weight: 800; /* Extra bold */
-    text-align: center; /* Centraliza o texto */
-    color: #FFFFFF; /* Cor branca para alto contraste */
-    text-shadow: 2px 2px 6px rgba(0,0,0,0.5); /* Sombra sutil para profundidade */
-    margin-bottom: 0.2em; /* Espaço abaixo do título */
-    padding-top: 0.5em; /* Espaço acima do título */
+    font-size: 4em;
+    font-weight: 900;
+    text-align: center;
+    color: #FFF;
+    text-shadow: 0 6px 32px #FF4B4B44, 0 2px 8px #000A;
+    margin-bottom: 0.2em;
+    padding-top: 0.5em;
+    letter-spacing: 0.03em;
+    background: linear-gradient(90deg, #FF4B4B 10%, #FFB347 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-/* Estilização do Subtítulo/Nome da Empresa */
+/* --- Subtítulo --- */
 .subtitle {
-    font-size: 1.8em; /* Tamanho da fonte do subtítulo */
-    text-align: center; /* Centraliza o texto */
-    color: #FF4B4B; /* Cor primária do tema para destaque */
-    margin-top: -0.2em; /* Ajusta a margem para ficar mais próximo do título principal */
-    margin-bottom: 1.5em; /* Espaço abaixo do subtítulo */
-    font-weight: 600; /* Semi-bold */
+    font-size: 2em;
+    text-align: center;
+    color: #FFB347;
+    margin-top: -0.2em;
+    margin-bottom: 1.5em;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 8px #0006;
 }
 
-/* Estilo para os Cards de Métricas (KPIs) */
-/* Seleciona o contêiner de cada métrica Streamlit (st.metric) */
+/* --- Cards de Métricas (KPIs) --- */
 div[data-testid="stMetric"] {
-    background-color: #1E202B; /* Cor de fundo do card, ligeiramente mais clara que o fundo principal */
-    border-radius: 12px; /* Cantos arredondados */
-    padding: 25px; /* Espaçamento interno */
-    margin-bottom: 25px; /* Espaço entre os cards e outros elementos */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra mais pronunciada para efeito de elevação */
-    border: 1px solid #333642; /* Borda sutil */
-    text-align: center; /* Centraliza o conteúdo (label e valor) dentro do card */
-    min-height: 130px; /* Altura mínima para os cards */
-    display: flex; /* Usa flexbox para alinhamento */
-    flex-direction: column; /* Coloca itens em coluna */
-    justify-content: center; /* Centraliza verticalmente */
-    align-items: center; /* Centraliza horizontalmente */
+    background: linear-gradient(120deg, #23263A 60%, #181A23 100%);
+    border-radius: 18px;
+    padding: 32px 18px 28px 18px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 32px 0 #FF4B4B22, 0 2px 8px #000A;
+    border: 1.5px solid #FF4B4B33;
+    text-align: center;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: box-shadow 0.2s;
+}
+div[data-testid="stMetric"]:hover {
+    box-shadow: 0 12px 40px 0 #FFB34733, 0 4px 16px #000A;
+    border-color: #FFB34799;
 }
 
-/* Estilo para o Label (título) dentro do Card da Métrica */
+/* Label do Card */
 div[data-testid="stMetricLabel"] > div {
-    font-size: 1.2em; /* Tamanho da fonte do label */
-    color: #BBBBBB; /* Cor mais clara para o label */
-    font-weight: 500; /* Peso da fonte */
-    margin-bottom: 8px; /* Espaço entre o label e o valor */
+    font-size: 1.25em;
+    color: #FFB347;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: 0.01em;
+    text-shadow: 0 1px 4px #0004;
 }
 
-/* Estilo para o Valor dentro do Card da Métrica */
+/* Valor do Card */
 div[data-testid="stMetricValue"] {
-    font-size: 3em; /* Tamanho da fonte do valor (bem maior) */
-    font-weight: bold; /* Negrito */
-    color: #FF4B4B; /* Cor primária do tema para o valor */
-    /* Formata o valor para não quebrar linha */
+    font-size: 3.2em;
+    font-weight: 900;
+    color: #FF4B4B;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-shadow: 0 2px 12px #FF4B4B33, 0 1px 4px #0008;
+    letter-spacing: 0.01em;
 }
 
-/* Estilo para os gráficos Plotly (para que se pareçam com cards também) */
-.stPlotlyChart {
-    background-color: #1E202B; /* Cor de fundo igual a dos cards */
+/* --- Cards de Gráficos --- */
+.card-plotly {
+    background: linear-gradient(120deg, #23263A 60%, #181A23 100%);
+    border-radius: 18px;
+    padding: 28px 18px 18px 18px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 32px 0 #FF4B4B22, 0 2px 8px #000A;
+    border: 1.5px solid #FF4B4B33;
+    transition: box-shadow 0.2s;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+.card-plotly:hover {
+    box-shadow: 0 12px 40px 0 #FFB34733, 0 4px 16px #000A;
+    border-color: #FFB34799;
+}
+.card-plotly h5, .card-plotly h4, .card-plotly h3, .card-plotly h2, .card-plotly h1 {
+    color: #FFB347;
+    margin-bottom: 0.7em;
+    margin-top: 0;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-shadow: 0 1px 4px #0004;
+}
+.card-plotly .stPlotlyChart {
+    background: transparent !important;
     border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    margin-bottom: 25px;
-    border: 1px solid #333642;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    margin: 0;
 }
 
-/* Ajustes para elementos da Sidebar (filtros) para combinar com o tema */
+/* --- Gráficos Plotly (fallback para fora do card) --- */
+.stPlotlyChart {
+    background: linear-gradient(120deg, #23263A 60%, #181A23 100%);
+    border-radius: 16px;
+    padding: 22px 10px 18px 10px;
+    box-shadow: 0 8px 32px 0 #FF4B4B22, 0 2px 8px #000A;
+    margin-bottom: 28px;
+    border: 1.5px solid #FF4B4B33;
+    transition: box-shadow 0.2s;
+}
+.stPlotlyChart:hover {
+    box-shadow: 0 12px 40px 0 #FFB34733, 0 4px 16px #000A;
+    border-color: #FFB34799;
+}
+
+/* --- Sidebar (Filtros) --- */
+.st-emotion-cache-1pxazr7 {
+    background: linear-gradient(135deg, #181A23 0%, #23263A 100%);
+    border-right: 2px solid #FF4B4B33;
+}
 .st-emotion-cache-1pxazr7 div.stSelectbox,
 .st-emotion-cache-1pxazr7 div.stMultiSelect,
 .st-emotion-cache-1pxazr7 div.stDateInput,
 .st-emotion-cache-1pxazr7 div.stTextInput {
-    background-color: #262730; /* Cor de fundo secundária do config.toml */
-    border-radius: 8px;
-    padding: 8px;
-    border: 1px solid #333642;
+    background: #23263A;
+    border-radius: 10px;
+    padding: 10px;
+    border: 1.5px solid #FFB34755;
+    color: #FAFAFA;
+    font-weight: 500;
+    margin-bottom: 10px;
 }
-
-/* Garante que o texto dos títulos e parágrafos na sidebar tenha a cor correta */
 .st-emotion-cache-1pxazr7 h1, .st-emotion-cache-1pxazr7 h2, .st-emotion-cache-1pxazr7 h3,
 .st-emotion-cache-1pxazr7 h4, .st-emotion-cache-1pxazr7 h5, .st-emotion-cache-1pxazr7 h6,
 .st-emotion-cache-1pxazr7 p, .st-emotion-cache-1pxazr7 label {
-    color: #FAFAFA !important; /* !important para garantir a aplicação */
+    color: #FFB347 !important;
+    font-weight: 600;
+    letter-spacing: 0.01em;
 }
 
-/* Estilo para botões (se houver, para combinar com o tema) */
+/* --- Botões --- */
 .stButton>button {
-    background-color: #FF4B4B;
-    color: white;
-    border-radius: 8px;
+    background: linear-gradient(90deg, #FF4B4B 60%, #FFB347 100%);
+    color: #FFF;
+    border-radius: 10px;
     border: none;
-    padding: 10px 20px;
+    padding: 12px 28px;
     font-weight: bold;
+    font-size: 1.1em;
+    box-shadow: 0 2px 8px #FF4B4B33;
+    transition: background 0.2s, box-shadow 0.2s;
 }
 .stButton>button:hover {
-    background-color: #E03A3A;
+    background: linear-gradient(90deg, #FFB347 60%, #FF4B4B 100%);
+    box-shadow: 0 4px 16px #FFB34733;
 }
 
+/* --- Tabela de Dados --- */
+.stDataFrame {
+    background: #23263A;
+    border-radius: 14px;
+    border: 1.5px solid #FFB34755;
+    box-shadow: 0 4px 16px #FFB34722;
+    font-size: 1.08em;
+}
+.stDataFrame th {
+    background: #FF4B4B;
+    color: #FFF;
+    font-weight: 700;
+    border-radius: 8px 8px 0 0;
+    letter-spacing: 0.01em;
+}
+.stDataFrame td {
+    background: #23263A;
+    color: #FAFAFA;
+    border-radius: 0 0 8px 8px;
+}
+
+/* --- Tooltip customizado para hover em cards e gráficos --- */
+div[data-testid="stMetric"]:hover,
+.card-plotly:hover,
+.stPlotlyChart:hover {
+    cursor: pointer;
+}
+
+/* --- Pequenos detalhes para inputs e seleção --- */
+input, select, textarea {
+    background: #23263A !important;
+    color: #FAFAFA !important;
+    border-radius: 8px !important;
+    border: 1.5px solid #FFB34755 !important;
+    font-size: 1em !important;
+    font-weight: 500 !important;
+}
+
+/* --- Remove outline azul padrão dos inputs ao focar --- */
+input:focus, select:focus, textarea:focus {
+    outline: 2px solid #FFB347 !important;
+    border-color: #FFB347 !important;
+}
+
+/* --- Ajuste para links --- */
+a {
+    color: #FFB347;
+    text-decoration: underline;
+}
+a:hover {
+    color: #FF4B4B;
+    text-decoration: none;
+}
 </style>
-""", unsafe_allow_html=True) # ESSENCIAL para que o Streamlit renderize o HTML e CSS
+""", unsafe_allow_html=True)
 
 
 # --- 3. Carregamento e Tratamento dos Dados ---
@@ -174,7 +304,16 @@ def load_data():
 df = load_data()
 
 # --- 4. Sidebar para Filtros ---
-st.sidebar.header("Filtros")
+with st.sidebar:
+    st.markdown(
+        """
+        <div style='text-align:center; margin-bottom: 1.5em;'>
+            <img src='https://site.labrasaburger.com.br/wp-content/uploads/2021/09/logo.png' style='width:90px; margin-bottom:0.5em;' />
+            <h2 style='color:#FF4B4B; margin-bottom:0.2em;'>Filtros</h2>
+            <p style='color:#BBBBBB; font-size:1.1em;'>Personalize sua análise</p>
+        </div>
+        """, unsafe_allow_html=True
+    )
 
 # Filtro de Data
 # Pega a data mínima e máxima disponível nos dados
@@ -213,10 +352,23 @@ selected_payment_methods = st.sidebar.multiselect(
 df_filtered = df_filtered[df_filtered['Pagamento'].isin(selected_payment_methods)]
 
 # --- 5. Título Principal do Dashboard ---
-# Usando as classes CSS personalizadas para o título e subtítulo
-st.markdown("<h1 class='main-title'>🍔 Dashboard Faturamento Madrugada</h1>", unsafe_allow_html=True)
-st.markdown("<h2 class='subtitle'>La Brasa Burger Aracaju</h2>", unsafe_allow_html=True)
-st.markdown("Análise detalhada do desempenho de vendas no período da madrugada (00:00 - 05:00).")
+# Título principal estilizado com logo e destaque visual
+st.markdown(f"""
+<div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 1.5em;">
+    <img src="https://site.labrasaburger.com.br/wp-content/uploads/2021/09/logo.png" style="width:110px; margin-bottom: 0.2em; border-radius: 18px; box-shadow: 0 4px 24px #FF4B4B33, 0 1px 8px #000A;" />
+    <h1 class="main-title" style="margin-bottom: 0.1em; font-size: 3.5em;">
+        Dashboard Faturamento Madrugada
+    </h1>
+    <h2 class="subtitle" style="margin-top: -0.3em; color:#FFB347;">
+        La Brasa Burger <span style="color:#BBBBBB;">Aracaju</span>
+    </h2>
+    <p style="font-size:1.18em; color:#BBBBBB; margin-top:0.3em;">
+        <span style="background:rgba(255,75,75,0.10); border-radius:10px; padding:0.5em 1.3em; box-shadow:0 2px 8px #FFB34722;">
+            Análise detalhada do desempenho de vendas <b style="color:#FF4B4B;">00:00 - 05:00</b>
+        </span>
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 # --- 6. Métricas Chave (Key Performance Indicators - KPIs) ---
 # Inicializa as variáveis para evitar erro de referência se o DataFrame filtrado estiver vazio
@@ -316,4 +468,25 @@ if not df_filtered.empty: # Condição para garantir que os gráficos só apare�
 
     # --- 8. Tabela de Dados (Amostra) ---
     st.subheader("Dados Detalhados (Amostra)")
-    st.dataframe(df_filtered)
+
+    # Seleciona as colunas e renomeia para exibir nomes mais amigáveis com ícones
+    df_display = df_filtered.copy()
+    df_display = df_display.rename(columns={
+        "Data": "📅 Data",
+        "Hora": "⏰ Hora",
+        "Pagamento": "💳 Forma de Pagamento",
+        "Total": "💰 Valor Total (R$)"
+    })
+
+    # Formata as colunas de data, hora e valor
+    df_display["📅 Data"] = df_display["📅 Data"].apply(lambda x: x.strftime("%d/%m/%Y"))
+    df_display["⏰ Hora"] = df_display["⏰ Hora"].apply(lambda x: x.strftime("%H:%M"))
+    df_display["💰 Valor Total (R$)"] = df_display["💰 Valor Total (R$)"].apply(lambda x: f"R$ {x:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+    # Mostra apenas as principais colunas com ícones
+    columns_to_show = ["📅 Data", "⏰ Hora", "💳 Forma de Pagamento", "💰 Valor Total (R$)"]
+    st.dataframe(
+        df_display[columns_to_show].reset_index(drop=True),
+        use_container_width=True,
+        hide_index=True
+    )
