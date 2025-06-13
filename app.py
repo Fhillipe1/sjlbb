@@ -3,7 +3,7 @@
 # Importa as bibliotecas necessárias
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+# ALTERAÇÃO: Substituímos 'plotly.express' por 'plotly.graph_objects'
 import plotly.graph_objects as go
 import datetime # Para lidar com objetos de tempo
 
@@ -12,7 +12,8 @@ import datetime # Para lidar com objetos de tempo
 # O layout 'wide' utiliza toda a largura disponível da tela, o que é ótimo para dashboards.
 st.set_page_config(
     page_title="Dashboard La Brasa Burger - Faturamento Madrugada",
-    page_icon="https://site.labrasaburger.com.br/wp-content/uploads/2021/09/logo.png",  # Ícone personalizado
+    # Mantendo o ícone da URL fornecida, mas lembrando que URLs externas podem ter problemas de carregamento
+    page_icon="https://site.labrasaburger.com.br/wp-content/uploads/2021/09/logo.png",
     layout="wide"
 )
 
@@ -161,7 +162,7 @@ div[data-testid="stMetricValue"] {
 }
 
 /* --- Sidebar (Filtros) --- */
-.st-emotion-cache-1pxazr7 {
+.st-emotion-cache-1pxazr7 { /* Selector for the sidebar container */
     background: linear-gradient(135deg, #181A23 0%, #23263A 100%);
     border-right: 2px solid #FF4B4B33;
 }
@@ -243,7 +244,7 @@ input, select, textarea {
 /* --- Remove outline azul padrão dos inputs ao focar --- */
 input:focus, select:focus, textarea:focus {
     outline: 2px solid #FFB347 !important;
-    border-color: #FFB347 !important;
+    border-color: #FF4B4B !important; /* Mudei para a cor principal do tema */
 }
 
 /* --- Ajuste para links --- */
@@ -308,7 +309,7 @@ with st.sidebar:
     st.markdown(
         """
         <div style='text-align:center; margin-bottom: 1.5em;'>
-            <img src='https://site.labrasaburger.com.br/wp-content/uploads/2021/09/logo.png' style='width:90px; margin-bottom:0.5em;' />
+            <img src='https://site.labrasaburger.com.br/wp-content/uploads/2021/09/logo.png' style='width:90px; margin-bottom:0.5em; border-radius: 12px; box-shadow: 0 4px 16px #FF4B4B22;' />
             <h2 style='color:#FF4B4B; margin-bottom:0.2em;'>Filtros</h2>
             <p style='color:#BBBBBB; font-size:1.1em;'>Personalize sua análise</p>
         </div>
@@ -403,31 +404,48 @@ if not df_filtered.empty: # Condição para garantir que os gráficos só apare�
     with col3:
         st.markdown("##### Faturamento Diário no Período da Madrugada")
         daily_revenue = df_filtered.groupby('Data')['Total'].sum().reset_index()
-        fig_line = px.line(
-            daily_revenue,
-            x='Data',
-            y='Total',
+        # Gráfico de Linha com Plotly Graph Objects
+        fig_line = go.Figure(data=go.Scatter(
+            x=daily_revenue['Data'],
+            y=daily_revenue['Total'],
+            mode='lines+markers', # Define o modo como linha e marcadores
+            line=dict(color='#FF4B4B', width=3), # Cor e espessura da linha
+            marker=dict(size=8, color='#FFB347', line=dict(width=1, color='#FF4B4B')), # Estilo dos marcadores
+            name='Faturamento' # Nome que aparece na legenda
+        ))
+        fig_line.update_layout(
             title='Faturamento Total por Dia',
-            labels={'Total': 'Faturamento (R$)', 'Data': 'Data'},
-            markers=True
+            xaxis_title='Data',
+            yaxis_title='Faturamento (R$)',
+            hovermode="x unified", # Melhor interatividade ao passar o mouse
+            template="plotly_dark" # Um tema escuro para combinar com o dashboard
         )
-        fig_line.update_traces(line_color='#FF4B4B') # Cor neutra para linha
-        fig_line.update_layout(hovermode="x unified")
         st.plotly_chart(fig_line, use_container_width=True)
 
 
     with col4:
         st.markdown("##### Distribuição do Faturamento por Forma de Pagamento")
         payment_revenue = df_filtered.groupby('Pagamento')['Total'].sum().reset_index()
-        fig_pie = px.pie(
-            payment_revenue,
-            values='Total',
-            names='Pagamento',
+        # Gráfico de Pizza com Plotly Graph Objects
+        # Cores para o gráfico de pizza (substituindo px.colors.qualitative.Pastel)
+        pie_colors = ['#FF4B4B', '#FFB347', '#7ACC7A', '#5CB0E8', '#AF7AE3', '#FF8C4B'] # Exemplo de paleta de cores
+        fig_pie = go.Figure(data=go.Pie(
+            values=payment_revenue['Total'],
+            labels=payment_revenue['Pagamento'],
+            hole=0.4, # Gráfico de donut
+            marker=dict(
+                colors=[pie_colors[i % len(pie_colors)] for i in range(len(payment_revenue))], # Aplica as cores ciclicamente
+                line=dict(color='#0E1117', width=1.5) # Borda mais escura para destacar as fatias
+            ),
+            textposition='inside', # Posição do texto (dentro das fatias)
+            textinfo='percent+label', # Informações a serem exibidas (percentual e label)
+            hoverinfo='label+percent+value', # Informações na tooltip
+            name='Forma de Pagamento' # Nome para a legenda
+        ))
+        fig_pie.update_layout(
             title='Faturamento por Forma de Pagamento',
-            hole=0.4,
-            color_discrete_sequence=px.colors.qualitative.Pastel
+            template="plotly_dark" # Tema escuro para combinar
         )
-        fig_pie.update_traces(textposition='inside', textinfo='percent+label', marker=dict(line=dict(color='#000000', width=1)))
         st.plotly_chart(fig_pie, use_container_width=True)
 
     st.markdown("##### Número de Pedidos e Faturamento por Hora na Madrugada")
@@ -443,27 +461,32 @@ if not df_filtered.empty: # Condição para garantir que os gráficos só apare�
                                               ordered=True)
     hourly_summary = hourly_summary.sort_values('Hora_Str')
 
-    fig_bar_hourly = px.bar(
-        hourly_summary,
-        x='Hora_Str',
-        y='Contagem_de_Pedidos',
-        title='Contagem de Pedidos e Faturamento por Hora (Madrugada)',
-        labels={'Hora_Str': 'Hora', 'Contagem_de_Pedidos': 'Número de Pedidos'},
-        color='Contagem_de_Pedidos',
-        color_continuous_scale=px.colors.sequential.Bluyl,
-        hover_data={'Faturamento_Total': ':.2f'}
-    )
-    fig_bar_hourly.update_traces(
+    # Gráfico de Barras com Plotly Graph Objects
+    fig_bar_hourly = go.Figure(data=go.Bar(
+        x=hourly_summary['Hora_Str'],
+        y=hourly_summary['Contagem_de_Pedidos'],
+        # Usando a coluna 'Contagem_de_Pedidos' para definir a cor das barras com um gradiente
+        marker=dict(
+            color=hourly_summary['Contagem_de_Pedidos'], # Cor baseada na contagem de pedidos
+            colorscale='Bluyl', # Escala de cor Bluyl (similar a px.colors.sequential.Bluyl)
+            line=dict(color='#0E1117', width=1) # Borda nas barras
+        ),
+        # Passa Faturamento_Total como customdata para a tooltip
+        customdata=hourly_summary['Faturamento_Total'],
+        # Configura a tooltip para exibir todas as informações desejadas
         hovertemplate="""
         <b>Hora</b>: %{x}<br>
         <b>Número de Pedidos</b>: %{y}<br>
-        <b>Faturamento Total</b>: R$ %{customdata[0]:,.2f}
+        <b>Faturamento Total</b>: R$ %{customdata:,.2f}
         <extra></extra>
-        """,
-        customdata=hourly_summary[['Faturamento_Total']].values
+        """
+    ))
+    fig_bar_hourly.update_layout(
+        title='Contagem de Pedidos e Faturamento por Hora (Madrugada)',
+        xaxis_title='Hora',
+        yaxis_title='Número de Pedidos',
+        template="plotly_dark" # Tema escuro para combinar
     )
-
-    fig_bar_hourly.update_layout(xaxis_title="Hora", yaxis_title="Número de Pedidos")
     st.plotly_chart(fig_bar_hourly, use_container_width=True)
 
     # --- 8. Tabela de Dados (Amostra) ---
