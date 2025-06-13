@@ -11,8 +11,7 @@ import datetime # Para lidar com objetos de tempo
 # O layout 'wide' utiliza toda a largura disponível da tela, o que é ótimo para dashboards.
 st.set_page_config(
     page_title="Dashboard La Brasa Burger - Faturamento Madrugada",
-    # Mantendo o ícone da URL fornecida, mas lembrando que URLs externas podem ter problemas de carregamento
-    page_icon="https://site.labrasaburger.com.br/wp-content/uploads/2021/09/logo.png",
+    page_icon="🍔", # Ícone para um emoji para maior estabilidade
     layout="wide"
 )
 
@@ -44,15 +43,16 @@ st.markdown("""
     font-size: 4em;
     font-weight: 900;
     text-align: center;
-    color: #FFF; /* Cor do texto agora é sólida branca */
-    text-shadow: 0 6px 32px rgba(0,0,0,0.5), 0 2px 8px #000A; /* Sombra sutil para profundidade */
+    color: #FFF; /* Cor do texto sólida branca para visibilidade */
+    /* Melhoria da sombra para um efeito mais profissional e brilhante */
+    text-shadow:
+        0 0 10px rgba(255, 75, 75, 0.6), /* Brilho sutil vermelho */
+        0 0 20px rgba(255, 75, 75, 0.4), /* Brilho um pouco mais forte */
+        0 4px 15px rgba(0, 0, 0, 0.7),   /* Sombra principal */
+        0 8px 25px rgba(0, 0, 0, 0.5);   /* Sombra mais profunda */
     margin-bottom: 0.2em;
     padding-top: 0.5em;
     letter-spacing: 0.03em;
-    /* REMOVIDO: as propriedades de gradiente e clip de texto que estavam causando o problema do título "apagado" */
-    /* background: linear-gradient(90deg, #FF4B4B 10%, #FFB347 90%); */
-    /* -webkit-background-clip: text; */
-    /* -webkit-text-fill-color: transparent; */
 }
 
 /* --- Subtítulo --- */
@@ -408,8 +408,6 @@ if not df_filtered.empty: # Condição para garantir que os gráficos só apare�
                 name='Faturamento' # Nome que aparece na legenda
             ))
             fig_line.update_layout(
-                # Título já está no st.markdown acima, mas podemos usar aqui para a imagem do gráfico
-                # title='Faturamento Total por Dia',
                 xaxis_title='Data',
                 yaxis_title='Faturamento (R$)',
                 hovermode="x unified", # Melhor interatividade ao passar o mouse
@@ -441,7 +439,6 @@ if not df_filtered.empty: # Condição para garantir que os gráficos só apare�
                 name='Forma de Pagamento' # Nome para a legenda
             ))
             fig_pie.update_layout(
-                # title='Faturamento por Forma de Pagamento', # Título já está no st.markdown
                 template="plotly_dark", # Tema escuro para combinar
                 margin=dict(t=30, b=30, l=40, r=40) # Ajusta margens
             )
@@ -479,7 +476,6 @@ if not df_filtered.empty: # Condição para garantir que os gráficos só apare�
             """
         ))
         fig_bar_hourly.update_layout(
-            # title='Contagem de Pedidos e Faturamento por Hora (Madrugada)', # Título já no st.markdown
             xaxis_title='Hora',
             yaxis_title='Número de Pedidos',
             template="plotly_dark",
